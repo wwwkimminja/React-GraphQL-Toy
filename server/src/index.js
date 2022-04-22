@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import messagesRoute from './routes/messages.js';
+import usersRoute from './routes/users.js';
 
 const app = express()
 app.use(express.urlencoded({extended:true}))
@@ -12,9 +13,11 @@ app.use(cors({
 }),
 );
 
-messagesRoute.forEach(({method, route, handler}) =>{
+const routes =[...messagesRoute,...usersRoute]
+routes.forEach(({method, route, handler}) =>{
     app[method](route,handler)
 });
+
 /* app[method](route,handler)
 
 app.get('/',(req,res)=>{

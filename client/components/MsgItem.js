@@ -5,20 +5,23 @@ import MsgInput from './MsgInput';
 const ItemList = styled.li`
 display: flex;
 flex-direction: column;
-justify-content: flex-start;
-align-items: flex-start;
 border: 1px solid darkgray;
 border-radius: 5px;
 margin-top: 5px;
-width: 100%;
-button{
+& button{
+   display: none;
+}
+
+&:hover button{
+    display: block;
     border-style: none;
     border:1px solid darkgray;
     border-radius: 5px;
 }
 
+
 div{
-    width: 95%;
+
     padding: 10px;
     display: flex;
     justify-content: space-between;
@@ -42,7 +45,7 @@ div{
 
 `;
 
-function MsgItem({id,userId,timestamp,text,isEditing,onUpdate,startEdit,onDelete}){
+function MsgItem({id,userId,timestamp,text,isEditing,onUpdate,startEdit,onDelete,myId}){
 
 
     return (
@@ -62,7 +65,7 @@ function MsgItem({id,userId,timestamp,text,isEditing,onUpdate,startEdit,onDelete
             </div>
             {isEditing === id ? <MsgInput mutate={onUpdate} id={id} text={text}/>: 
            <div>{text}</div>}
-            <div><button onClick={startEdit}>Edit</button><button className='delBtn' onClick={onDelete}>Del</button></div>
+            {userId === myId &&<div><button onClick={startEdit}>Edit</button><button className='delBtn' onClick={onDelete}>Del</button></div>}
         </ItemList>
        
     )

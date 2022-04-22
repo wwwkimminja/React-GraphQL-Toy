@@ -1,25 +1,19 @@
 import {useRef} from 'react';
 import styled from 'styled-components';
 
+
 const Form = styled.form`
-
+box-sizing: border-box;
 display: flex;
-justify-content: center;
+width: 90%;
+padding:10px;
 
-
-margin: 0;
-width:80%;
-
-padding-left: 40px;
 textarea {
-   
-flex-grow: 1;
-}
-button {
-    
+    flex:1 1 80%
 }
 
 `;
+
 
 
 function MsgInput ({mutate,text='',id=''}){

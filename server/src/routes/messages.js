@@ -1,4 +1,8 @@
 import { readDB,writeDB } from "../dbController.js"
+import { v4 } from 'uuid';
+
+const getMsgs = ()=>readDB('messages')
+const setMsgs = data =>writeDB('messages',data)
 
 const messagesRoute =[
 {
@@ -6,34 +10,94 @@ const messagesRoute =[
     method:'get',
     route:'/messages',
     handler:(req,res)=>{
-        const msgs=readDB('messages')
+       const msgs=getMsgs()
         res.send(msgs)
     }
+},
+{
+    //GET MESSAGE
+    method:'get',
+    route:'/messages/:id',
+    handler:({params:{id}},res)=>{
+        try{
+            const msgs = getMsgs()
+            const msg = msgs.find(m => m.id === id)
+            if(!msg) throw Error('not found')
+            res.send(msg)
+            
+        }catch(err){
+            res.status(404).send({error:err})
+
+        }
+
+        res.send
+    }
+    
 },
 {
     //CREAT MESSAGES
     method:'post',
     route:'/messages',
-    handler:(req,res)=>{
-        res.send()
+    handler:({body},res)=>{
+        try{
+            if(!body.userId) throw Error('no userId')
+
+            const msgs=getMsgs()
+            const newMsg={
+                id:`${v4()}`,
+                text:body.text,
+                userId:body.userId,
+                timestamp:Date.now()
+                
+            }
+            msgs.unshift(newMsg)
+            setMsgs(msgs)
+            res.send(newMsg)
+        }catch(err){
+            res.status(500).send({error:err})
+        }
     }
 },
 {
     //UPDATE MESSAGES
     method:'put',
     route:'/messages/:id',
-    handler:(req,res)=>{
+    handler:({body,params:{id}},res)=>{
+        try{
+            const msgs=getMsgs()
+            const targetIndex= msgs.findIndex(msg =>msg.id ===id)
+            if(targetIndex<0) throw 'there is no data'
+            if(msgs[targetIndex].userId !== body.userId) "You can't not access to update this data "
+
+            const newMsg= {...msgs[targetIndex],text:body.text,timestamp:Date.now()}
+            msgs.splice(targetIndex,1,newMsg)
+            setMsgs(msgs)
+            res.send(newMsg)
+
+        }catch(err){
+            res.status(500).send({error:err})
+        }
         res.send()
     }
 },
-{
-    //DELETE MESSAGES
-    method:'delete',
-    route:'/messages/:id',
-    handler:(req,res)=>{
-        res.send()
-    }
-},
+ {//DELETE MESSAGE
+    method: 'delete',
+    route: '/messages/:id',
+    handler: ({params: { id },query: { userId }}, res) => {
+        
+        try {
+            const msgs = getMsgs()
+            const targetIndex = msgs.findIndex(msg => msg.id === id)
+            if (targetIndex < 0) throw 'There is nothing!'
+            if (msgs[targetIndex].userId !== userId) throw 'You cannot access to delete this data'
+            msgs.splice(targetIndex, 1)
+            setMsgs(msgs)
+            res.send(id)
+        } catch (err) {
+            res.status(500).send({error : err })
+        }
+    },
+}
 
 ]
 
